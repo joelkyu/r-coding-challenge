@@ -1,4 +1,5 @@
 library(shiny)
+library(ggplot2)
 
 ui <- fluidPage(
   tags$head(
@@ -10,9 +11,13 @@ ui <- fluidPage(
   sidebarPanel(
     
     
-    selectInput('xaxis', 'X Variable', names(iris)[c(1,2,3,4)]),
-    selectInput('yaxis', 'Y Variable', names(iris)[c(1,2,3,4)]),
-    actionButton(inputId = "updateBtn", label = "Update")
+    selectInput('xaxis', 'X Variable', names(iris)[c(1:4)]),
+    selectInput('yaxis', 'Y Variable', names(iris)[c(1:4)]),
+    actionButton(inputId = "scatterBtn", label = "Scatter Plot"),
+    actionButton(inputId = "histBtn", label = "Histogram"),
+    actionButton(inputId = "boxBtn", label = "Box Plot")
+    
+    
     
   ),
   mainPanel(
@@ -24,11 +29,20 @@ server <- function(input, output) {
   
   
   
-  data <- eventReactive(input$updateBtn, iris[, c(input$xaxis, input$yaxis)])
+  showScatter <- eventReactive(input$scatterBtn, 
+                               plot(iris[, c(input$xaxis, input$yaxis)]))
+  
+  showHistorgram <- eventReactive(input$histBtn, hist(iris[,input$xaxis]))
+  
+  showBox <- eventReactive(input$boxBtn, boxplot(iris[,input$xaxis]))
   
   
   output$plot <- renderPlot({
-    plot(data())
+    showScatter()
+    showHistorgram()
+    showBox()
+    
+    
   })
 }
 
